@@ -46,7 +46,7 @@
 namespace gr {
     namespace maveriq {
 
-#define DEBUG_MAVERIQ 1
+#define DEBUG_MAVERIQ 0
 #define DEBUG(A)    if( DEBUG_MAVERIQ ) printf("=debug=> %s\n", A)
 
 #define IQ_HEADER_SIZE (sizeof(srfs::BINARY_IQ))
