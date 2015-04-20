@@ -110,6 +110,24 @@ namespace gr {
       {
 	  return (rcv->sample_rate());
       }
+
+      uint32_t 
+      maveriq_source_s_impl::set_bandwidth(uint32_t bandwidth)
+      {
+	  return (rcv->set_bandwidth(bandwidth));
+      }
+
+      uint32_t 
+      maveriq_source_s_impl::set_bandwidth(float bandwidth)
+      {
+	  return (rcv->set_bandwidth(bandwidth));
+      }
+
+      uint32_t 
+      maveriq_source_s_impl::bandwidth(void)
+      {
+	  return (rcv->bandwidth());
+      }
 	
       STATUS 
       maveriq_source_s_impl::set_front_lna(STATUS enable)

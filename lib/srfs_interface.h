@@ -42,6 +42,7 @@ namespace srfs {
 	SRFS_UINT8,
 	SRFS_FLOAT,
 	SRFS_ENUM,
+        SRFS_UINT32_ACTUAL,
     } SRFS_DATATYPES;
     
     /** container of a SRFS parameter */

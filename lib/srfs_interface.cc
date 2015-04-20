@@ -110,6 +110,11 @@ namespace srfs {
 					     p_param->p_strings, 
 					     p_param->max_value );
 		    break;
+
+                case SRFS_UINT32_ACTUAL:
+                    sscanf( p_value, "%u",
+                            (uint32_t*)(p_param->p_value) );
+                    break;
 		
 		default:
 		    throw std::invalid_argument("invalid data_type on update");
@@ -243,7 +248,12 @@ namespace srfs {
 					 (uint32_t)(p_param->resolution),
 					 *((uint32_t*)(p_value)) );
 		break;
-		
+                
+            case SRFS_UINT32_ACTUAL:
+                // this is only a returned value, so don't allow it to be set
+                b_valid = false;
+                break;
+
 	    default:
 		throw std::invalid_argument("invalid data_type on set");
 		break;

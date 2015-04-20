@@ -54,7 +54,7 @@ namespace gr {
 	* \param freq The frequency in Hz
 	* \return the actual center frequency
 	*
-	* Set the center frequency of the Matchstiq.
+	* Set the center frequency of the Maveriq.
 	*/
        virtual uint64_t set_center_freq(uint64_t freq) = 0;
 
@@ -72,7 +72,7 @@ namespace gr {
 	* \brief Get center frequency with Hz resolution.
 	* \return the actual center frequency
 	*
-	* Get the center frequency of the Matchstiq.
+	* Get the center frequency of the Maveriq.
 	*/
        virtual uint64_t center_freq(void) = 0;
 
@@ -81,7 +81,7 @@ namespace gr {
 	* \param sample_rate The sample rate
 	* \return the actual sample rate
 	*
-	* Set the sample rate of the Matchstiq. To calculate the rate 
+	* Set the sample rate of the Maveriq. To calculate the rate 
 	* of samples delivered, the decimation stage needs to be
 	* factored in.
 	*/
@@ -101,11 +101,43 @@ namespace gr {
 	* \brief Get the sample rate
 	* \return the actual sample rate
 	*
-	* Get the sample rate of the Matchstiq. To calculate
+	* Get the sample rate of the Maveriq. To calculate
 	* the rate of samples delivered, the decimation stage needs to be
 	* factored in.
 	*/
        virtual uint32_t sample_rate(void) = 0;
+
+       /*! 
+	* \brief Set the channel bandwidth
+	* \param bandwidth The channel bandwidth
+	* \return the actual bandwidth
+        * 
+        * The requested channel bandwidth configures
+        * the FIR filter coefficients.  The requested channel bandwidth 
+        * does not always match the actual bandwidth, so the actual bandwidth
+        * should be queried after configuring.
+	*/
+       virtual uint32_t set_bandwidth(uint32_t bandwidth) = 0;
+
+       /*! 
+	* \brief Set the channel bandwidth
+	* \param bandwidth The channel bandwidth
+	* \return the actual bandwidth
+        * 
+        * The requested channel bandwidth configures
+        * the FIR filter coefficients.  The requested channel bandwidth 
+        * does not always match the actual bandwidth, so the actual bandwidth
+        * should be queried after configuring.
+	*/
+       virtual uint32_t set_bandwidth(float bandwidth) = 0;
+
+       /*! 
+	* \brief Get the channel bandwidth
+	* \return the actual channel bandwidth
+	*
+	* Get the channel bandwidth of the Maveriq. 
+	*/
+       virtual uint32_t bandwidth(void) = 0;
 
        /*! 
 	* \brief Enable/disable the front LNA

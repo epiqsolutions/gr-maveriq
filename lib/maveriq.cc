@@ -46,7 +46,7 @@
 namespace gr {
     namespace maveriq {
 
-#define DEBUG_MAVERIQ 1
+#define DEBUG_MAVERIQ 0
 #define DEBUG(A)    if( DEBUG_MAVERIQ ) printf("=debug=> %s\n", A)
 
 #define IQ_HEADER_SIZE (sizeof(srfs::BINARY_IQ))
@@ -70,6 +70,10 @@ namespace gr {
 #define SAMPLE_RATE_MIN   233000
 #define SAMPLE_RATE_MAX 40000000
 #define SAMPLE_RATE_RESOLUTION 1
+
+#define BANDWIDTH_MIN   233000
+#define BANDWIDTH_MAX 40000000
+#define BANDWIDTH_RESOLUTION 1
 
 #define RX_GAIN_MIN        0
 #define RX_GAIN_MAX       76
@@ -116,6 +120,7 @@ maveriq::maveriq(const char* addr, unsigned short port)
     // set default values
     d_rx_freq = FREQUENCY_MIN;
     d_rx_sample_rate = SAMPLE_RATE_MIN;
+    d_rx_bandwidth = BANDWIDTH_MIN;
     d_rx_front_lna_status = STATUS_ENABLED;
     d_rx_second_lna_status = STATUS_ENABLED;
     d_rx_gain = 50;
@@ -142,7 +147,7 @@ void
 maveriq::init_srfs_params(void)
 {
     // frequency
-    add_srfs_param( "frequency",
+    add_srfs_param( "A1:frequency",
 		    srfs::SRFS_UINT64,
 		    (void*)(&d_rx_freq),
 		    FREQUENCY_MIN,
@@ -151,7 +156,7 @@ maveriq::init_srfs_params(void)
 		    NULL );
 
     // sample rate
-    add_srfs_param( "sample_rate",
+    add_srfs_param( "A1:sample_rate",
 		    srfs::SRFS_UINT32,
 		    (void*)(&d_rx_sample_rate),
 		    SAMPLE_RATE_MIN,
@@ -159,8 +164,27 @@ maveriq::init_srfs_params(void)
 		    SAMPLE_RATE_RESOLUTION,
 		    NULL );
 
+    // bandwidth
+    add_srfs_param( "A1:bandwidth",
+		    srfs::SRFS_UINT32,
+		    (void*)(&d_rx_bandwidth),
+		    BANDWIDTH_MIN,
+		    BANDWIDTH_MAX,
+		    BANDWIDTH_RESOLUTION,
+		    NULL );
+
+    // actual bandwidth, this parameter cannot be configured but represents
+    // the actual bandwidth setting
+    add_srfs_param( "A1:actual_bandwidth",
+		    srfs::SRFS_UINT32_ACTUAL,
+		    (void*)(&d_rx_actual_bandwidth),
+		    0,
+		    0,
+		    0,
+		    NULL );
+
     // front lna
-    add_srfs_param( "lna1",
+    add_srfs_param( "A1:lna1",
 		    srfs::SRFS_ENUM,
 		    (void*)(&d_rx_front_lna_status),
 		    0,
@@ -169,7 +193,7 @@ maveriq::init_srfs_params(void)
 		    status_str );
 
     // second lna
-    add_srfs_param( "lna2",
+    add_srfs_param( "A1:lna2",
 		    srfs::SRFS_ENUM,
 		    (void*)(&d_rx_second_lna_status),
 		    0,
@@ -178,7 +202,7 @@ maveriq::init_srfs_params(void)
 		    status_str );		    
 
     // rx gain
-    add_srfs_param( "rx_gain",
+    add_srfs_param( "A1:rx_gain",
 		    srfs::SRFS_UINT8,
 		    (void*)(&d_rx_gain),
 		    RX_GAIN_MIN,
@@ -187,7 +211,7 @@ maveriq::init_srfs_params(void)
 		    NULL );
 
     // step atten
-    add_srfs_param( "step_atten",
+    add_srfs_param( "A1:step_atten",
 		    srfs::SRFS_UINT8,
 		    (void*)(&d_rx_step_atten),
 		    STEP_ATTEN_MIN,
@@ -196,7 +220,7 @@ maveriq::init_srfs_params(void)
 		    NULL );
 
     // gain mode
-    add_srfs_param( "gain_mode",
+    add_srfs_param( "A1:gain_mode",
 		    srfs::SRFS_ENUM,
 		    (void*)(&d_rx_gain_mode),
 		    0, 
@@ -250,7 +274,7 @@ maveriq::set_param( const std::string token, void *pValue )
 uint64_t
 maveriq::set_center_freq(uint64_t rx_freq)
 {
-    set_param( "frequency", &rx_freq );
+    set_param( "A1:frequency", &rx_freq );
     return d_rx_freq;
 }
 
@@ -263,7 +287,7 @@ maveriq::center_freq(void)
 uint32_t
 maveriq::set_sample_rate(uint32_t rx_sample_rate)
 {
-    set_param("sample_rate", &rx_sample_rate);
+    set_param("A1:sample_rate", &rx_sample_rate);
     return d_rx_sample_rate;
 }
 
@@ -273,10 +297,23 @@ maveriq::sample_rate(void)
     return d_rx_sample_rate;
 }
 
+uint32_t
+maveriq::set_bandwidth(uint32_t rx_bandwidth)
+{
+    set_param("A1:bandwidth", &rx_bandwidth);
+    return d_rx_bandwidth;
+}
+
+uint32_t
+maveriq::bandwidth(void)
+{
+    return d_rx_actual_bandwidth;
+}
+
 STATUS
 maveriq::set_front_lna( STATUS rx_lna_status )
 {
-    set_param("lna1", &rx_lna_status);
+    set_param("A1:lna1", &rx_lna_status);
     return d_rx_front_lna_status;
 }
 
@@ -289,7 +326,7 @@ maveriq::front_lna( void )
 STATUS 
 maveriq::set_second_lna(STATUS enable)
 {
-    set_param("lna2", &enable);
+    set_param("A1:lna2", &enable);
     return d_rx_second_lna_status;
 }
 
@@ -302,7 +339,7 @@ maveriq::second_lna(void)
 uint8_t 
 maveriq::set_rx_gain(uint8_t gain)
 {
-    set_param("rx_gain", &gain);
+    set_param("A1:rx_gain", &gain);
     return d_rx_gain;
 }
 
@@ -315,7 +352,7 @@ maveriq::rx_gain(void)
 uint8_t 
 maveriq::set_step_attenuator(uint8_t step_atten)
 {
-    set_param("step_atten", &step_atten);
+    set_param("A1:step_atten", &step_atten);
     return d_rx_step_atten;
 }
 
@@ -328,7 +365,7 @@ maveriq::step_attenuator(void)
 GAIN_MODE 
 maveriq::set_rx_gain_mode(GAIN_MODE mode)
 {
-    set_param("gain_mode", &mode);
+    set_param("A1:gain_mode", &mode);
     return d_rx_gain_mode;
 }
 
@@ -381,12 +418,6 @@ maveriq::open_srfs()
     send_msg( cmd );
     receive_msg( rcv, 1024 );
     
-    // configure to continuous, set timestamp to 0
-#if 0
-    snprintf(cmd, 1024, 
-	     "config! block IQ:%d duty_cycle continuous block_timestamp 0\n", 
-	     d_iq_port);
-#endif
     snprintf(cmd, 1024, 
 	     "config! block IQ:%d duty_cycle continuous\n", 
 	     d_iq_port);
@@ -543,7 +574,7 @@ void
 maveriq::config_src()
 {
     char cmd[1024];
-    char rcv[1024];
+    char rcv[10000];
 
     char *pParam;
     char *pValue;
@@ -557,7 +588,11 @@ maveriq::config_src()
     for( iter=maveriq_params.begin(); 
 	 iter != maveriq_params.end(); 
 	 iter++ ) {
-	index += snprintf( &cmd[index], 1024-index, " A1:%s ", (iter->first).c_str() );
+        
+        if( iter->second.data_type != srfs::SRFS_UINT32_ACTUAL ) {
+            index += snprintf( &cmd[index], 1024-index, " %s ", (iter->first).c_str() );
+        }
+
 	// format the parameters based on data_type
 	switch( iter->second.data_type ) {
 	    case srfs::SRFS_UINT64:
@@ -589,19 +624,24 @@ maveriq::config_src()
 		index += snprintf( &cmd[index], 1024-index, "%s", 
 				   (iter->second.p_strings[(*(int*)(iter->second.p_value))]).c_str() );
 		break;
+
+            case srfs::SRFS_UINT32_ACTUAL:
+                // this parameter is only returned as an actual parameter, so don't 
+                // allow it to be set
+                break;
 	}
     }
     index += snprintf( &cmd[index], 1024-index, " A1:status %s\n",
 		       status_str[d_srfs_src_status].c_str());
     send_msg( cmd );
-    receive_msg( rcv, 1024 );
+    receive_msg( rcv, 10000 );
 
     // parse the response, update the returned parameters
-    pParam = strtok( rcv, " :"  );
+    pParam = strtok( rcv, " " );
     while( pParam != NULL )	{
 	iter = maveriq_params.find(pParam);
 	if( iter != maveriq_params.end() ) {
-	    pParam = strtok( NULL, " :" );
+	    pParam = strtok( NULL, " " );
 	    update_param( &(iter->second), (const char*)(pParam) );
 	}
 	else if( strncmp(pParam, "NOK", 4) == 0 ) {

@@ -72,6 +72,9 @@ namespace gr {
 	    
 	    uint32_t set_sample_rate(uint32_t sample_rate);
 	    uint32_t sample_rate(void);
+
+	    uint32_t set_bandwidth(uint32_t bandwidth);
+	    uint32_t bandwidth(void);
 	    
 	    STATUS set_front_lna(STATUS enable);
 	    STATUS front_lna(void);
@@ -92,6 +95,8 @@ namespace gr {
 	    // maveriq parameters
 	    uint64_t d_rx_freq;
 	    uint32_t d_rx_sample_rate;
+            uint32_t d_rx_bandwidth;
+            uint32_t d_rx_actual_bandwidth;
 	    STATUS d_rx_front_lna_status;
 	    STATUS d_rx_second_lna_status;
 	    uint8_t d_rx_gain;

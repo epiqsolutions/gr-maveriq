@@ -55,6 +55,10 @@ namespace gr {
 	uint32_t set_sample_rate(uint32_t sample_rate);
 	uint32_t set_sample_rate(float sample_rate);
 	uint32_t sample_rate(void);
+
+	uint32_t set_bandwidth(uint32_t bandwidth);
+	uint32_t set_bandwidth(float bandwidth);
+	uint32_t bandwidth(void);
 	
 	STATUS set_front_lna(STATUS enable);
 	STATUS front_lna(void);
