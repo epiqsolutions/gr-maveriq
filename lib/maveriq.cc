@@ -61,7 +61,7 @@ namespace gr {
 #define NUM_SAMPLES (PKT_SIZE/sizeof(uint32_t))
 
 
-#define NUM_RECV_ATTEMPTS (3)
+#define NUM_RECV_ATTEMPTS (10)
 
 #define FREQUENCY_MIN  47000000ULL
 #define FREQUENCY_MAX 6000000000ULL
@@ -129,6 +129,8 @@ maveriq::maveriq(const char* addr, unsigned short port)
     d_srfs_src_status = STATUS_DISABLED;
 
     d_state = STATE_STOPPED;
+
+    d_usleep_period = (1.0/((float)(d_rx_sample_rate)/1000000.0))*((float)(NUM_SAMPLES));
 
     init_srfs_params();
 
@@ -288,6 +290,8 @@ uint32_t
 maveriq::set_sample_rate(uint32_t rx_sample_rate)
 {
     set_param("A1:sample_rate", &rx_sample_rate);
+    d_usleep_period = (1.0/((float)(d_rx_sample_rate)/1000000.0))*((float)(NUM_SAMPLES));
+
     return d_rx_sample_rate;
 }
 
@@ -524,7 +528,7 @@ maveriq::stop()
 	    }
 	    else {
 		count++;
-		usleep(100*1000);
+		usleep(10*d_usleep_period);
 	    }
 	}
 	// shutdown the IQ socket
@@ -706,7 +710,7 @@ maveriq::read(char* buf, int size)
 		    first = true;
 		    goto end_recv;
 		}
-		usleep(10*1000);
+		usleep(10*d_usleep_period);
 	    }
 	    else
 	    {
@@ -737,7 +741,7 @@ maveriq::read(char* buf, int size)
 		    first = true;
 		    goto end_recv;
 		}
-		usleep(10*1000);
+		usleep(10*d_usleep_period);
 	    }
 	    else {
 		count = 0;

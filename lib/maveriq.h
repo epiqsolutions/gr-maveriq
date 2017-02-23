@@ -92,6 +92,8 @@ namespace gr {
 	    GAIN_MODE rx_gain_mode(void);
 
 	private:
+            uint32_t d_usleep_period;
+            
 	    // maveriq parameters
 	    uint64_t d_rx_freq;
 	    uint32_t d_rx_sample_rate;
